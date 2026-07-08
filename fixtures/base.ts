@@ -1,37 +1,21 @@
-import { test as base, expect } from '@playwright/test';
-import type { Page, BrowserContext, Browser } from '@playwright/test';
+import { test as base } from '@playwright/test';
+import { LoginPage } from '../pages/login-page';
+import { HomePage } from '../pages/home-page';
 
-/**
- * Base fixture for all tests - replaces BaseTests.java
- * Provides page, context, browser fixtures with common setup/teardown
- */
-export const test = base.extend<{
-  page: Page;
-  context: BrowserContext;
-  browser: Browser;
-}>({
-  // Override page fixture to include base URL navigation and timeout config
-  page: async ({ page }, use) => {
-    // Navigate to base URL (replaces driver.get())
-    await page.goto('https://opensource-demo.orangehrmlive.com/');
-    
-    // Maximize window (replaces driver.manage().window().maximize())
-    await page.setViewportSize({ width: 1920, height: 1080 });
-    
-    // TODO: migrate - Original code used implicit wait of 10 seconds
-    // Playwright has built-in auto-waiting; explicit timeout set at test level if needed
-    // Use test.setTimeout() in individual tests or page.waitForTimeout() for specific waits
-    
-    await use(page);
-    
-    // Teardown happens automatically - Playwright closes page/context/browser
-    // No need for explicit driver.quit() equivalent
+type MyFixtures = {
+  loginPage: LoginPage;
+  homePage: HomePage;
+};
+
+export const test = base.extend<MyFixtures>({
+  loginPage: async ({ page }, use) => {
+    const loginPage = new LoginPage(page);
+    await use(loginPage);
+  },
+  homePage: async ({ page }, use) => {
+    const homePage = new HomePage(page);
+    await use(homePage);
   },
 });
 
-export { expect };
-
-/**
- * Constants from original BaseTests
- */
-export const TIMEOUT = 10000; // 10 seconds in milliseconds for Playwright APIs
+export { expect } from '@playwright/test';
