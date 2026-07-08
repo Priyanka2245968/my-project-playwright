@@ -1,0 +1,29 @@
+name: Playwright Tests
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:        # enables the manual "Run workflow" button in the Actions tab
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    # Run inside the official Playwright image: browsers + OS deps are PRE-INSTALLED,
+    # so there is no browser download or extraction step (that's where the job was hanging).
+    # Keep this tag in sync with the @playwright/test version in package.json.
+    container:
+      image: mcr.microsoft.com/playwright:v1.59.1-noble
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+        cache: 'npm'                       # cache npm deps between runs
+    - name: Install dependencies
+      run: npm install                     
+                                           
+
+    # No `playwright install` needed — the browser binaries already live in the image.
+    - name: Run Playwright tests
+      run: npx playwright test --project "chromium" --workers 1 --global-timeout 120000 -x
