@@ -9,7 +9,7 @@ test.describe('Login', () => {
   });
 
   test('Verify valid credentials allow user to login successfully', async ({ page, loginPage, homePage }) => {
-    await loginPage.login('valid_user', 'valid_password');
+    await loginPage.login('Admin', 'admin123');
     await expect(homePage.homePageUserName).toBeVisible();
   });
 });
